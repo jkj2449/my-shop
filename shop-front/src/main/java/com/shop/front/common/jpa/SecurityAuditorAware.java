@@ -15,9 +15,10 @@ public class SecurityAuditorAware implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            return Optional.empty();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return Optional.of("Anonymous");
         }
+
         MemberDetails member = (MemberDetails) authentication.getPrincipal();
         return Optional.of(member.getEmail());
     }

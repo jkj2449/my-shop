@@ -1,5 +1,6 @@
 package com.shop.core.domain.cart;
 
+import com.shop.core.domain.BaseTimeEntity;
 import com.shop.core.domain.item.Item;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-public class Cart {
+public class Cart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

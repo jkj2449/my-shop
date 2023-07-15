@@ -1,6 +1,5 @@
 package com.shop.core.domain.cart;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,7 @@ public class CartRepositorySupportImpl extends QuerydslRepositorySupport impleme
     }
 
     public Page<Cart> search(final Long memberId, final Pageable pageable) {
-        List<Cart> list = queryFactory.select(Projections.constructor(Cart.class, cart.id, cart.memberId, item))
+        List<Cart> list = queryFactory.select(cart)
                 .from(cart)
                 .join(cart.item, item)
                 .where(cart.memberId.eq(memberId))
@@ -44,7 +43,7 @@ public class CartRepositorySupportImpl extends QuerydslRepositorySupport impleme
                 .where(cart.memberId.eq(memberId))
                 .fetchOne();
 
-        PageImpl<Cart> cart = new PageImpl<>(list, pageable, count);
-        return cart;
+        PageImpl<Cart> carts = new PageImpl<>(list, pageable, count);
+        return carts;
     }
 }

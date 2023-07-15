@@ -1,8 +1,14 @@
 package com.shop.front.util;
 
-import com.shop.front.service.ItemService;
+import com.shop.core.domain.item.Item;
+import com.shop.core.domain.order.Order;
+import com.shop.core.domain.order.OrderDetail;
+import com.shop.core.domain.order.OrderRepository;
+import com.shop.core.domain.order.OrderStatus;
+import com.shop.core.domain.payment.PayType;
 import com.shop.front.dto.item.ItemSaveRequestDto;
 import com.shop.front.dto.member.MemberSignUpRequestDto;
+import com.shop.front.service.ItemService;
 import com.shop.front.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
@@ -12,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
@@ -19,11 +26,13 @@ import java.util.stream.IntStream;
 public class DataInitSupport implements ApplicationRunner {
     private final ItemService itemService;
     private final MemberService memberService;
+    private final OrderRepository orderRepository;
 
     @Override
     public void run(ApplicationArguments args) {
         initMember();
         initItem();
+        initOrder();
     }
 
     private void initMember() {
@@ -36,6 +45,28 @@ public class DataInitSupport implements ApplicationRunner {
                 .build();
 
         memberService.signUp(dto);
+    }
+
+    private void initOrder() {
+        List<OrderDetail> orderDetailList = IntStream.range(1, 3)
+                .mapToObj(i -> OrderDetail.builder()
+                        .price(1000L * i)
+                        .item(Item.builder().id(Long.valueOf(i)).build())
+                        .build())
+                .collect(Collectors.toList());
+
+        Order order = Order.builder()
+                .memberId(1L)
+                .address("test")
+                .cardNumber("1234")
+                .bank("01")
+                .price(3000L)
+                .orderStatus(OrderStatus.COMPLETED)
+                .payType(PayType.CARD)
+                .orderDetail(orderDetailList)
+                .build();
+
+        orderRepository.save(order);
     }
 
     private void initItem() {

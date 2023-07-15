@@ -5,9 +5,9 @@ import com.shop.core.domain.cart.CartRepository;
 import com.shop.core.domain.item.Item;
 import com.shop.core.domain.item.ItemRepository;
 import com.shop.front.common.SecurityContextProvider;
-import com.shop.front.dto.cart.CartSaveRequestsDto;
 import com.shop.front.dto.cart.CartDeleteRequestsDto;
 import com.shop.front.dto.cart.CartListResponseDto;
+import com.shop.front.dto.cart.CartSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +20,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ItemRepository itemRepository;
 
-    public Page<CartListResponseDto> findByMemberId(final Long memberId, final Pageable pageable) {
+    public Page<CartListResponseDto> search(final Long memberId, final Pageable pageable) {
         if (!SecurityContextProvider.getMember().getId().equals(memberId)) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
@@ -31,7 +31,7 @@ public class CartService {
     }
 
     @Transactional
-    public Long save(final CartSaveRequestsDto dto) {
+    public Long save(final CartSaveRequestDto dto) {
         if (!SecurityContextProvider.getMember().getId().equals(dto.getMemberId())) {
             throw new IllegalArgumentException("권한이 없습니다.");
         }

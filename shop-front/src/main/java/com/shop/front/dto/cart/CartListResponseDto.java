@@ -2,7 +2,6 @@ package com.shop.front.dto.cart;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.shop.core.domain.cart.Cart;
-import com.shop.core.domain.item.Item;
 import com.shop.front.dto.item.ItemResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

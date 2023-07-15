@@ -11,13 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-public class itemController {
+public class ItemController {
 
     private final ItemService itemService;
-//    @GetMapping("/api/v1/items")
-//    public List<ItemListResponseDto> find() {
-//        return itemService.findAll();
-//    }
 
     @GetMapping("/api/v1/items")
     public Page<ItemListResponseDto> findAll(@PageableDefault Pageable pageable) {

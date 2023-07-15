@@ -1,11 +1,9 @@
 package com.shop.front.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shop.core.domain.member.Member;
-import com.shop.core.domain.member.MemberRepository;
-import com.shop.core.domain.member.Role;
 import com.shop.front.common.security.JwtProperties;
 import com.shop.front.config.EmbeddedRedisConfig;
+import com.shop.front.config.WithCustomUser;
 import com.shop.front.dto.member.MemberSignInRequestDto;
 import com.shop.front.dto.member.MemberSignOutRequestDto;
 import com.shop.front.dto.member.MemberSignUpRequestDto;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,24 +32,10 @@ class SignApiControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .build();
-
-        String email = "test1@test.co.kr";
-        String username = "test";
-        String password = "1234";
-
-        memberRepository.save(Member.builder()
-                .email(email)
-                .username(username)
-                .password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password))
-                .role(Role.USER.getRole())
-                .build());
     }
 
     @Test
@@ -102,6 +85,7 @@ class SignApiControllerTest {
     }
 
     @Test
+    @WithCustomUser("test1")
     public void 로그인_된다() throws Exception {
         String email = "test1@test.co.kr";
         String password = "1234";
@@ -123,6 +107,7 @@ class SignApiControllerTest {
     }
 
     @Test
+    @WithCustomUser("test1")
     public void 로그아웃_된다() throws Exception {
         String email = "test1@test.co.kr";
 

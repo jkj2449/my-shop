@@ -1,6 +1,5 @@
-package com.shop.front.common;
+package com.shop.front.common.security;
 
-import com.shop.front.common.security.MemberDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public final class SecurityContextProvider {

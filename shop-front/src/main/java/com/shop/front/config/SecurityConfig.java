@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers("/h2-console/**", "/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh", "/api/v1/items").permitAll()
+                .antMatchers("/h2-console/**", "/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh", "/api/v1/items", "/api/v1/codes").permitAll()
                 .anyRequest().authenticated()
                 .expressionHandler(expressionHandler())
                 .and()

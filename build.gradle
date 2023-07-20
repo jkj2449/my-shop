@@ -36,11 +36,14 @@ subprojects {
     dependencies {
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+        implementation 'org.apache.commons:commons-lang3:3.0'
+
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testCompileOnly 'org.projectlombok:lombok:'
         testAnnotationProcessor 'org.projectlombok:lombok'
 
+        testImplementation 'org.mockito:mockito-inline'
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         }

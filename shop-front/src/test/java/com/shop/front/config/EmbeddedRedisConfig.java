@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-@Profile("!prod")
+@Profile("test")
 @TestConfiguration
 public class EmbeddedRedisConfig {
     @Value("${spring.data.redis.port}")
@@ -89,6 +89,6 @@ public class EmbeddedRedisConfig {
         } catch (Exception e) {
         }
 
-        return !StringUtils.isEmpty(pidInfo.toString());
+        return !StringUtils.hasText(pidInfo.toString());
     }
 }

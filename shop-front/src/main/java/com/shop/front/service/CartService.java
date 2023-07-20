@@ -4,7 +4,7 @@ import com.shop.core.domain.cart.Cart;
 import com.shop.core.domain.cart.CartRepository;
 import com.shop.core.domain.item.Item;
 import com.shop.core.domain.item.ItemRepository;
-import com.shop.front.common.SecurityContextProvider;
+import com.shop.front.common.security.SecurityContextProvider;
 import com.shop.front.dto.cart.CartDeleteRequestsDto;
 import com.shop.front.dto.cart.CartListResponseDto;
 import com.shop.front.dto.cart.CartSaveRequestDto;
@@ -25,9 +25,9 @@ public class CartService {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
 
-        Page<Cart> search = cartRepository.search(memberId, pageable);
+        Page<Cart> page = cartRepository.search(memberId, pageable);
 
-        return search.map(CartListResponseDto::new);
+        return page.map(CartListResponseDto::new);
     }
 
     @Transactional

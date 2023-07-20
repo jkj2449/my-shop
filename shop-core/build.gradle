@@ -3,12 +3,15 @@ plugins {
 }
 
 dependencies {
-    api "com.querydsl:querydsl-jpa:5.0.0"
-    api "com.querydsl:querydsl-core:5.0.0"
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation "com.querydsl:querydsl-jpa:5.0.0"
+    implementation "com.querydsl:querydsl-core:5.0.0"
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0"
 
-    api 'org.springframework.boot:spring-boot-starter-data-jpa'
-    api 'mysql:mysql-connector-java'
+    implementation 'mysql:mysql-connector-java'
+
+    testImplementation 'com.h2database:h2'
 }
 
 test {

@@ -17,6 +17,6 @@ public class ItemController {
 
     @GetMapping("/api/v1/items")
     public Page<ItemListResponseDto> findAll(@PageableDefault Pageable pageable) {
-        return itemService.findAll(pageable);
+        return itemService.search(pageable);
     }
 }

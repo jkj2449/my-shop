@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@ComponentScan(value="com.shop")
 @EntityScan("com.shop.core")
 @EnableJpaRepositories("com.shop.core")
+@ComponentScan({"com.shop.core", "com.shop.front"})
 @SpringBootApplication
 public class ShopApplication {
 

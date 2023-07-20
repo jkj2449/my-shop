@@ -1,7 +1,10 @@
 package com.shop.core.domain.order;
 
 import com.shop.core.domain.BaseTimeEntity;
-import com.shop.core.domain.payment.PayType;
+import com.shop.core.domain.code.BankCode;
+import com.shop.core.domain.code.CardCode;
+import com.shop.core.domain.code.OrderStatusCode;
+import com.shop.core.domain.code.PayTypeCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +25,18 @@ public class Order extends BaseTimeEntity {
     private Long memberId;
     @Column(length = 500, nullable = false)
     private String address;
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String cardNumber;
-    @Column(length = 2, nullable = false)
-    private String bank;
+    @Column(length = 2)
+    private CardCode cardCode;
+    @Column(length = 2)
+    private BankCode bankCode;
     @Column(nullable = false)
     private Long price;
     @Column(length = 2, nullable = false)
-    private OrderStatus orderStatus;
+    private OrderStatusCode orderStatusCode;
     @Column(length = 2, nullable = false)
-    private PayType payType;
+    private PayTypeCode payTypeCode;
 
     @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.PERSIST)
@@ -39,14 +44,16 @@ public class Order extends BaseTimeEntity {
     private List<OrderDetail> orderDetail = new ArrayList<>();
 
     @Builder
-    public Order(Long memberId, String address, String cardNumber, String bank, Long price, OrderStatus orderStatus, PayType payType, List<OrderDetail> orderDetail) {
+    public Order(Long id, Long memberId, String address, String cardNumber, CardCode cardCode, BankCode bankCode, Long price, OrderStatusCode orderStatusCode, PayTypeCode payTypeCode, List<OrderDetail> orderDetail) {
+        this.id = id;
         this.memberId = memberId;
         this.address = address;
         this.cardNumber = cardNumber;
-        this.bank = bank;
+        this.cardCode = cardCode;
+        this.bankCode = bankCode;
         this.price = price;
-        this.orderStatus = orderStatus;
-        this.payType = payType;
+        this.orderStatusCode = orderStatusCode;
+        this.payTypeCode = payTypeCode;
         this.orderDetail = orderDetail;
     }
 }

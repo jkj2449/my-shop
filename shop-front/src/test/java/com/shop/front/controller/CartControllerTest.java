@@ -1,6 +1,7 @@
 package com.shop.front.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shop.front.common.security.MemberDetails;
 import com.shop.front.config.EmbeddedRedisConfig;
 import com.shop.front.config.WithCustomUser;
 import com.shop.front.dto.cart.CartSaveRequestDto;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,11 +43,12 @@ class CartControllerTest {
     @WithCustomUser("test1")
     @Test
     public void 장바구니에_담긴다() throws Exception {
-        Long memberId = 1L;
         Long itemId = 1L;
 
+        MemberDetails memberDetails = (MemberDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         CartSaveRequestDto requestsDto = CartSaveRequestDto.builder()
-                .memberId(memberId)
+                .memberId(memberDetails.getId())
                 .itemId(itemId)
                 .build();
 
@@ -61,11 +64,12 @@ class CartControllerTest {
     @WithCustomUser("test1")
     @Test
     public void 장바구니_조회된다() throws Exception {
-        Long memberId = 1L;
         Long itemId = 1L;
 
+        MemberDetails memberDetails = (MemberDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         CartSaveRequestDto requestsDto = CartSaveRequestDto.builder()
-                .memberId(memberId)
+                .memberId(memberDetails.getId())
                 .itemId(itemId)
                 .build();
 
@@ -78,7 +82,7 @@ class CartControllerTest {
                 .andDo(print());
 
 
-        mockMvc.perform(get(url + "/" + memberId))
+        mockMvc.perform(get(url + "/" + memberDetails.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].item", notNullValue()))

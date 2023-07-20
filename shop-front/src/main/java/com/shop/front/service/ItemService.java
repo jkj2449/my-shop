@@ -11,9 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @Service
 public class ItemService {
@@ -29,14 +26,7 @@ public class ItemService {
         return itemRepository.save(requestDto.toEntity()).getId();
     }
 
-    public List<ItemListResponseDto> findAll() {
-        return itemRepository.findAll()
-                .stream()
-                .map(item -> ItemListResponseDto.builder().entity(item).build())
-                .collect(Collectors.toList());
-    }
-
-    public Page<ItemListResponseDto> findAll(final Pageable pageable) {
+    public Page<ItemListResponseDto> search(final Pageable pageable) {
         return itemRepository.findAll(pageable).map(ItemListResponseDto::new);
     }
 

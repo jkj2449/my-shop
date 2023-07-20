@@ -31,8 +31,7 @@ public class WithCustomSecurityContextFactory implements WithSecurityContextFact
         memberService.signUp(requestDto);
 
         MemberDetails memberDetails = memberService.loadUserByUsername(email);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(memberDetails,
-                memberDetails.getPassword(), memberDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(memberDetails, "", memberDetails.getAuthorities());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
 

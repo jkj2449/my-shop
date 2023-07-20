@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.shop.core.common.EnumMapper;
+import com.shop.core.common.CodeEnum;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -37,8 +37,8 @@ public class JacksonConfig {
 
         @Override
         public void serialize(Enum<?> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            if (EnumMapper.class.isAssignableFrom(value.getClass())) {
-                gen.writeString(((EnumMapper) value).getCode());
+            if (CodeEnum.class.isAssignableFrom(value.getClass())) {
+                gen.writeString(((CodeEnum) value).getCode());
                 return;
             }
 
@@ -59,10 +59,14 @@ public class JacksonConfig {
         public Enum<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             String value = p.getValueAsString();
 
+            if (value == null || value.isEmpty()) {
+                return null;
+            }
+
             return (Enum<?>) Arrays.stream(this._valueClass.getEnumConstants())
                     .filter(e -> {
-                        if (EnumMapper.class.isAssignableFrom(this._valueClass)) {
-                            return ((EnumMapper) e).getCode().equals(value);
+                        if (CodeEnum.class.isAssignableFrom(this._valueClass)) {
+                            return ((CodeEnum) e).getCode().equals(value);
                         } else {
                             return ((Enum<?>) e).name().equals(value);
                         }

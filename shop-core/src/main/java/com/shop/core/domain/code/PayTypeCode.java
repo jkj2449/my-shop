@@ -1,11 +1,11 @@
-package com.shop.core.domain.payment;
+package com.shop.core.domain.code;
 
+import com.shop.core.common.CodeEnum;
 import com.shop.core.common.CustomEnumJpaConverter;
-import com.shop.core.common.EnumMapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum PayType implements EnumMapper {
+public enum PayTypeCode implements CodeEnum {
     CARD("01", "카드"), REMITTANCE("02", "무통장 입금");
 
     private final String code;
@@ -17,14 +17,14 @@ public enum PayType implements EnumMapper {
     }
 
     @Override
-    public String getTitle() {
+    public String getName() {
         return title;
     }
 
     @javax.persistence.Converter(autoApply = true)
-    static class Converter extends CustomEnumJpaConverter<PayType> {
+    static class Converter extends CustomEnumJpaConverter<PayTypeCode> {
         public Converter() {
-            super(PayType.class);
+            super(PayTypeCode.class);
         }
     }
 }

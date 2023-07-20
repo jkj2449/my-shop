@@ -1,11 +1,12 @@
 package com.shop.front.util;
 
+import com.shop.core.domain.code.BankCode;
+import com.shop.core.domain.code.OrderStatusCode;
+import com.shop.core.domain.code.PayTypeCode;
 import com.shop.core.domain.item.Item;
 import com.shop.core.domain.order.Order;
 import com.shop.core.domain.order.OrderDetail;
 import com.shop.core.domain.order.OrderRepository;
-import com.shop.core.domain.order.OrderStatus;
-import com.shop.core.domain.payment.PayType;
 import com.shop.front.dto.item.ItemSaveRequestDto;
 import com.shop.front.dto.member.MemberSignUpRequestDto;
 import com.shop.front.service.ItemService;
@@ -59,10 +60,10 @@ public class DataInitSupport implements ApplicationRunner {
                 .memberId(1L)
                 .address("test")
                 .cardNumber("1234")
-                .bank("01")
+                .bankCode(BankCode.SHINHAN_BANK)
                 .price(3000L)
-                .orderStatus(OrderStatus.COMPLETED)
-                .payType(PayType.CARD)
+                .orderStatusCode(OrderStatusCode.COMPLETED)
+                .payTypeCode(PayTypeCode.CARD)
                 .orderDetail(orderDetailList)
                 .build();
 

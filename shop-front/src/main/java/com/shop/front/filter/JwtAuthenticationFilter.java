@@ -22,7 +22,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private static final String[] excludePath = {"/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh"};
+    private static final String[] excludePath = {"/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh", "/api/v1/items", "/api/v1/codes"};
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

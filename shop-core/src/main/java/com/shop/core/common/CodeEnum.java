@@ -1,8 +1,8 @@
 package com.shop.core.common;
 
 
-public interface EnumMapper {
+public interface CodeEnum {
     String getCode();
 
-    String getTitle();
+    String getName();
 }

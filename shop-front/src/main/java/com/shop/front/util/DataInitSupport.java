@@ -31,9 +31,9 @@ public class DataInitSupport implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        initMember();
-        initItem();
-        initOrder();
+//        initMember();
+//        initItem();
+//        initOrder();
     }
 
     private void initMember() {

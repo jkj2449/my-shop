@@ -9,7 +9,7 @@ dependencies {
     implementation "com.querydsl:querydsl-core:5.0.0"
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0"
 
-    implementation 'mysql:mysql-connector-java'
+    runtimeOnly 'mysql:mysql-connector-java'
 
     testImplementation 'com.h2database:h2'
 }

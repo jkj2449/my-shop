@@ -11,18 +11,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 @Setter
 @Getter
 @NoArgsConstructor
 public class OrderSaveRequestDto {
-    @Min(1)
+    @NotNull
     private Long memberId;
     @NotNull
     private String address;
@@ -31,76 +34,67 @@ public class OrderSaveRequestDto {
     private BankCode bankCode;
     @NotNull
     private PayTypeCode payTypeCode;
+    @NotNull
+    private Long totalPrice;
+    private List<Long> cartIdList;
     @Size(min = 1)
-    private List<OrderDetailSaveRequestDto> orderDetailList;
+    private List<Long> itemIdList;
 
-    public Order toEntity() {
+    public Order toEntity(final List<Item> items) {
         return Order.builder()
                 .memberId(this.memberId)
                 .address(this.address)
                 .cardNumber(this.cardNumber)
-                .cardCode(this.cardCode)
-                .bankCode(this.bankCode)
-                .price(this.getItemsPriceTotalSum())
-                .orderStatusCode(this.getOrderStatusCode())
+                .cardCode(PayTypeCode.CARD == this.payTypeCode ? this.cardCode : null)
+                .bankCode(PayTypeCode.REMITTANCE == this.payTypeCode ? this.bankCode : null)
+                .price(this.totalPrice)
+                .orderStatusCode(OrderStatusCode.PROCESSING_PAYMENT)
                 .payTypeCode(this.payTypeCode)
-                .orderDetail(toOrderDetails())
+                .orderDetail(this.toOrderDetails(items))
                 .build();
     }
 
-    public List<Long> getItemIdList() {
-        return this.orderDetailList
-                .stream()
-                .map(item -> item.getItemId())
-                .collect(Collectors.toList());
-    }
-
-    public List<Long> getCartIdList() {
-        return this.orderDetailList
-                .stream()
-                .map(item -> item.getItemId())
-                .collect(Collectors.toList());
-    }
-
-    public Long getItemsPriceTotalSum() {
-        return this.orderDetailList.stream().mapToLong(item -> item.getPrice()).sum();
-    }
-
-    public boolean isValidPrice(List<Item> items) {
-        if (items.size() != this.orderDetailList.size()) {
-            return false;
+    public void validatePayType() {
+        if (PayTypeCode.CARD == this.payTypeCode) {
+            if (nonNull(this.cardCode) && StringUtils.hasText(cardNumber)) {
+                return;
+            }
         }
 
-        Long itemPriceTotalSum = items.stream().mapToLong(item -> item.getPrice()).sum();
-        if (this.getItemsPriceTotalSum().equals(itemPriceTotalSum)) {
-            return true;
+        if (PayTypeCode.REMITTANCE == this.payTypeCode && isNull(this.bankCode)) {
+            return;
         }
 
-        return false;
+        throw new IllegalArgumentException("주문타입이 올바르지 않습니다.");
     }
 
-    private List<OrderDetail> toOrderDetails() {
-        return this.orderDetailList.stream()
-                .map(OrderDetailSaveRequestDto::toEntity)
-                .collect(Collectors.toList());
-    }
-
-    private OrderStatusCode getOrderStatusCode() {
-        if (PayTypeCode.CARD.equals(payTypeCode.getCode())) {
-            return OrderStatusCode.PROCESSING_PAYMENT;
+    public void validatePrice(final List<Item> items) {
+        Long itemPriceTotal = items.stream().mapToLong(Item::getPrice).sum();
+        if (itemPriceTotal.equals(this.getTotalPrice())) {
+            return;
         }
 
-        return OrderStatusCode.PENDING_PAYMENT;
+        throw new IllegalArgumentException("주문금액이 올바르지 않습니다.");
+    }
+
+    private List<OrderDetail> toOrderDetails(final List<Item> items) {
+        return items.stream()
+                .map(item -> OrderDetail.builder()
+                        .price(item.getPrice())
+                        .item(item)
+                        .build()).collect(Collectors.toList());
     }
 
     @Builder
-    public OrderSaveRequestDto(Long memberId, String address, String cardNumber, CardCode cardCode, BankCode bankCode, PayTypeCode payTypeCode, List<OrderDetailSaveRequestDto> orderDetailList) {
+    public OrderSaveRequestDto(Long memberId, String address, String cardNumber, CardCode cardCode, BankCode bankCode, PayTypeCode payTypeCode, Long totalPrice, List<Long> cartIdList, List<Long> itemIdList) {
         this.memberId = memberId;
         this.address = address;
         this.cardNumber = cardNumber;
         this.cardCode = cardCode;
         this.bankCode = bankCode;
         this.payTypeCode = payTypeCode;
-        this.orderDetailList = orderDetailList;
+        this.totalPrice = totalPrice;
+        this.cartIdList = cartIdList;
+        this.itemIdList = itemIdList;
     }
 }

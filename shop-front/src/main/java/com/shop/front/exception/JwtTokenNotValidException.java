@@ -2,8 +2,6 @@ package com.shop.front.exception;
 
 
 public class JwtTokenNotValidException extends RuntimeException {
-    private static final long serialVersionUID = -7955229120735840L;
-
     public JwtTokenNotValidException() {
         super();
     }

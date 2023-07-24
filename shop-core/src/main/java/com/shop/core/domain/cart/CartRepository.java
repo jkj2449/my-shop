@@ -11,4 +11,6 @@ public interface CartRepository extends JpaRepository<Cart, Long>, CartRepositor
     @Modifying(clearAutomatically = true)
     @Query("delete from Cart c where c.id in :idList")
     void deleteByIdIn(@Param("idList") List<Long> idList);
+
+    List<Cart> findByIdIn(List<Long> cartIdList);
 }

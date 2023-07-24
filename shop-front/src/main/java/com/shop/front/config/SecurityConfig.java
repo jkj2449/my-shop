@@ -13,16 +13,32 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+    static {
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
+
+    public static final List<String> excludePath = List.of(
+            "/api/v1/signIn"
+            , "/api/v1/signUp"
+            , "/api/v1/refresh"
+            , "/api/v1/items"
+            , "/api/v1/codes"
+            , "/sample/**"
+    );
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
@@ -35,7 +51,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers("/h2-console/**", "/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh", "/api/v1/items", "/api/v1/codes").permitAll()
+                .antMatchers(excludePath.toArray(new String[excludePath.size()])).permitAll()
                 .anyRequest().authenticated()
                 .expressionHandler(expressionHandler())
                 .and()

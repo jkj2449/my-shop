@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-public enum OrderStatusCode implements CodeEnum {
-    COMPLETED("01", "주문 완료"), FAILED("02", "주문 실패"), PENDING_PAYMENT("03", "입금 대기"), PROCESSING_PAYMENT("04", "결제 처리중");
+public enum OutboxStatusCode implements CodeEnum {
+    PENDING("01", "대기"), SUCCEED("02", "성공"), FAILED("03", "실패"), FAIL_COMPLETED("04", "실패 처리 완료");
 
     private final String code;
     private final String title;
@@ -23,17 +23,17 @@ public enum OrderStatusCode implements CodeEnum {
         return title;
     }
 
-    public static OrderStatusCode of(String code) {
-        return Arrays.stream(OrderStatusCode.values())
+    public static OutboxStatusCode of(String code) {
+        return Arrays.stream(OutboxStatusCode.values())
                 .findFirst()
                 .filter(v -> v.getCode().equals(code))
                 .orElseThrow(() -> new IllegalArgumentException("not found match code = " + code));
     }
 
     @javax.persistence.Converter(autoApply = true)
-    static class Converter extends CustomEnumJpaConverter<OrderStatusCode> {
+    static class Converter extends CustomEnumJpaConverter<OutboxStatusCode> {
         public Converter() {
-            super(OrderStatusCode.class);
+            super(OutboxStatusCode.class);
         }
     }
 }

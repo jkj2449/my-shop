@@ -7,7 +7,8 @@ import com.shop.core.domain.code.OrderStatusCode;
 import com.shop.core.domain.code.PayTypeCode;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Entity
-@RequiredArgsConstructor
+@Entity(name = "order")
+@NoArgsConstructor
 public class Order extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,7 @@ public class Order extends BaseTimeEntity {
     private BankCode bankCode;
     @Column(nullable = false)
     private Long price;
+    @Setter
     @Column(length = 2, nullable = false)
     private OrderStatusCode orderStatusCode;
     @Column(length = 2, nullable = false)

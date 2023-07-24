@@ -10,11 +10,8 @@ import com.shop.core.domain.member.Role;
 import com.shop.core.domain.order.Order;
 import com.shop.core.domain.order.OrderRepository;
 import com.shop.front.common.security.MemberDetails;
-import com.shop.front.common.security.SecurityContextProvider;
-import com.shop.front.dto.order.OrderDetailSaveRequestDto;
 import com.shop.front.dto.order.OrderListResponseDto;
 import com.shop.front.dto.order.OrderSaveRequestDto;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,15 +25,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -45,20 +41,14 @@ class OrderServiceTest {
     @Mock
     OrderRepository orderRepository;
     @Mock
-    ItemRepository itemRepository;
-    @Mock
     CartRepository cartRepository;
+    @Mock
+    ItemRepository itemRepository;
     MemberDetails member;
-
-    @BeforeAll
-    public static void setupAll() {
-        mockStatic(SecurityContextProvider.class);
-    }
 
     @BeforeEach
     public void setup() {
         this.member = createMember(1L);
-        given(SecurityContextProvider.getMember()).willReturn(member);
     }
 
     @Test
@@ -93,7 +83,7 @@ class OrderServiceTest {
     @DisplayName("주문 가격이 맞지 않아 실패된다.")
     public void order_fail_price() {
         OrderSaveRequestDto requestDto = this.createOrderSaveRequestDto(PayTypeCode.CARD, CardCode.K_CARD, null);
-        requestDto.getOrderDetailList().get(0).setPrice(10000L);
+        requestDto.setTotalPrice(10L);
 
         given(itemRepository.findByIdIn(requestDto.getItemIdList())).willReturn(this.createItemList());
 
@@ -103,56 +93,35 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("주문 상품 갯수가 맞지 않아 실패된다.")
-    public void order_fail_item_count() {
-        OrderSaveRequestDto requestDto = this.createOrderSaveRequestDto(PayTypeCode.CARD, CardCode.K_CARD, null);
-
-        OrderDetailSaveRequestDto detailRequestDto = OrderDetailSaveRequestDto.builder()
-                .cartId(1L)
-                .itemId(1L)
-                .price(100l)
-                .build();
-
-        requestDto.getOrderDetailList().add(detailRequestDto);
-
-        given(itemRepository.findByIdIn(requestDto.getItemIdList())).willReturn(this.createItemList());
-
+    @DisplayName("주문 타입이 맞지 않아 실패된다.")
+    public void order_fail_type() {
+        OrderSaveRequestDto requestDto = this.createOrderSaveRequestDto(PayTypeCode.REMITTANCE, CardCode.K_CARD, null);
         assertThrows(IllegalArgumentException.class, () -> {
             orderService.order(requestDto);
         });
     }
 
-    private List<Item> createItemList() {
-        return LongStream.range(1, 5)
-                .mapToObj(i -> {
-                    return Item.builder()
-                            .id(i)
-                            .price(i * 100)
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
     private OrderSaveRequestDto createOrderSaveRequestDto(PayTypeCode payTypeCode, CardCode cardCode, BankCode bankCode) {
+        List<Item> itemList = this.createItemList();
+
         return OrderSaveRequestDto.builder()
                 .memberId(member.getId())
                 .payTypeCode(payTypeCode)
                 .cardCode(cardCode)
                 .bankCode(bankCode)
-                .orderDetailList(this.createOrderDetailSaveRequestDtoList())
+                .totalPrice(itemList.stream().mapToLong(Item::getPrice).sum())
+                .itemIdList(itemList.stream().map(Item::getId).collect(toList()))
+                .cartIdList(List.of(1L, 2L))
                 .build();
     }
 
-    private List<OrderDetailSaveRequestDto> createOrderDetailSaveRequestDtoList() {
-        List<Item> itemList = this.createItemList();
-
-        return itemList.stream()
-                .map(item -> OrderDetailSaveRequestDto.builder()
-                        .cartId(item.getId())
-                        .itemId(item.getId())
-                        .price(item.getPrice())
+    private List<Item> createItemList() {
+        return LongStream.range(1, 3)
+                .mapToObj(i -> Item.builder()
+                        .id(i)
+                        .price(i * 100L)
                         .build())
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Order createOrder(Long memberId) {

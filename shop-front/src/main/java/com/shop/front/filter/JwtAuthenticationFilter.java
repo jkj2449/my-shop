@@ -4,6 +4,7 @@ import com.shop.front.common.security.JwtProperties;
 import com.shop.front.common.security.JwtTokenProvider;
 import com.shop.front.common.security.MemberDetails;
 import com.shop.front.common.security.Token;
+import com.shop.front.config.SecurityConfig;
 import com.shop.front.exception.JwtTokenNotValidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +17,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private static final String[] excludePath = {"/api/v1/signIn", "/api/v1/signUp", "/api/v1/refresh", "/api/v1/items", "/api/v1/codes"};
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return Arrays.stream(excludePath).filter(v -> v.equals(path)).findAny().isPresent();
+        return SecurityConfig.excludePath.stream().anyMatch(v -> v.equals(path));
     }
 
     private void setAuthentication(Token token) {

@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.shop.core.common.CodeEnum;
+import com.shop.front.util.ObjectMapperProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,13 +18,10 @@ import java.util.Arrays;
 public class JacksonConfig {
     @Bean
     public static ObjectMapper objectMapper() {
-        return new Jackson2ObjectMapperBuilder()
-                .serializerByType(Enum.class, new EnumMapperSerializer())
-                .deserializerByType(Enum.class, new EnumMapperDeserializer())
-                .build();
+        return ObjectMapperProvider.objectMapper();
     }
 
-    static class EnumMapperSerializer extends StdSerializer<Enum<?>> {
+    static public class EnumMapperSerializer extends StdSerializer<Enum<?>> {
 
         public EnumMapperSerializer() {
             this(null);
@@ -46,7 +43,7 @@ public class JacksonConfig {
         }
     }
 
-    static class EnumMapperDeserializer extends StdDeserializer<Enum<?>> implements ContextualDeserializer {
+    static public class EnumMapperDeserializer extends StdDeserializer<Enum<?>> implements ContextualDeserializer {
         public EnumMapperDeserializer() {
             this(null);
         }

@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class ItemService {
@@ -30,11 +32,8 @@ public class ItemService {
         return itemRepository.findAll(pageable).map(ItemListResponseDto::new);
     }
 
-//    public Page<ItemListResponseDto> findAllByMemberId(final Long memberId, final Pageable pageable) {
-//        if (!SecurityContextProvider.getMember().getId().equals(memberId)) {
-//            throw new IllegalArgumentException("권한이 없습니다.");
-//        }
-//
-//        return itemRepository.findAllByMemberId(memberId, pageable).map(ItemListResponseDto::new);
-//    }
+    public Long getTotalPriceSum(List<Long> itemIdList) {
+        List<Item> items = itemRepository.findByIdIn(itemIdList);
+        return items.stream().mapToLong(item -> item.getPrice()).sum();
+    }
 }

@@ -4,7 +4,6 @@ import com.shop.core.domain.cart.Cart;
 import com.shop.core.domain.cart.CartRepository;
 import com.shop.core.domain.item.Item;
 import com.shop.core.domain.item.ItemRepository;
-import com.shop.front.common.security.SecurityContextProvider;
 import com.shop.front.dto.cart.CartDeleteRequestsDto;
 import com.shop.front.dto.cart.CartListResponseDto;
 import com.shop.front.dto.cart.CartSaveRequestDto;
@@ -21,10 +20,6 @@ public class CartService {
     private final ItemRepository itemRepository;
 
     public Page<CartListResponseDto> search(final Long memberId, final Pageable pageable) {
-        if (!SecurityContextProvider.getMember().getId().equals(memberId)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-
         Page<Cart> page = cartRepository.search(memberId, pageable);
 
         return page.map(CartListResponseDto::new);
@@ -32,12 +27,7 @@ public class CartService {
 
     @Transactional
     public Long save(final CartSaveRequestDto dto) {
-        if (!SecurityContextProvider.getMember().getId().equals(dto.getMemberId())) {
-            throw new IllegalArgumentException("권한이 없습니다.");
-        }
-
         Item item = itemRepository.getReferenceById(dto.getItemId());
-
         return cartRepository.save(dto.toEntity(item)).getId();
     }
 
